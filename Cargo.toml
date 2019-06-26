@@ -1,0 +1,14 @@
+[package]
+name = "rle-decode-helper"
+version = "0.1.0"
+authors = ["Moritz Wanzenböck <moritz.wanzenboeck@catalysts.cc>"]
+edition = "2018"
+
+[[bench]]
+name = "bench"
+harness = false
+
+[dependencies]
+
+[dev-dependencies]
+criterion = "0.2"
