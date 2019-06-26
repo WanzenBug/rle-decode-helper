@@ -1,9 +1,16 @@
 [package]
 name = "rle-decode-helper"
 version = "1.0.0-alpha"
-authors = ["Moritz Wanzenböck <moritz.wanzenboeck@catalysts.cc>"]
+authors = ["Moritz Wanzenböck <moritz@wanzenbug.xyz>"]
 edition = "2018"
 license = "MIT OR Apache-2.0"
+description = """
+**THE** fastest way to implement any kind of decoding for **R**un **L**ength **E**ncoded data in Rust.
+
+Writing a fast decoder that is also safe can be quite challenging, so this crate is here to save you the
+hassle of maintaining and testing your own implementation.
+"""
+repository = "https://github.com/WanzenBug/rle-decode-helper"
 
 [[bench]]
 name = "bench"
