@@ -1,6 +1,6 @@
 [package]
 name = "rle-decode-helper"
-version = "1.0.0-alpha"
+version = "1.0.0-alpha2"
 authors = ["Moritz Wanzenböck <moritz@wanzenbug.xyz>"]
 edition = "2018"
 license = "MIT OR Apache-2.0"
