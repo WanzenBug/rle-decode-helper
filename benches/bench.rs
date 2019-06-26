@@ -6,17 +6,13 @@ use std::fmt::{Debug, Formatter, Error};
 #[derive(Clone)]
 struct Inputs {
     buffer: Vec<u8>,
-    fragment: usize,
+    lookbehind: usize,
     length: usize,
 }
 
 impl Debug for Inputs {
     fn fmt<'a>(&self, f: &mut Formatter<'a>) -> Result<(), Error> {
-        f.debug_struct("Inputs")
-            .field("buffer", &format!("Bytes(length={})", self.buffer.len()))
-            .field("fragment", &self.fragment)
-            .field("length", &self.length)
-            .finish()
+        write!(f, "lookbehind={}", self.lookbehind)
     }
 }
 
@@ -26,7 +22,7 @@ fn naive(bencher: &mut Bencher, inputs: &Inputs) {
         move |input| {
             let mut input = black_box(input);
             for _ in 0..input.length {
-                let val = input.buffer[input.buffer.len() - input.fragment];
+                let val = input.buffer[input.buffer.len() - input.lookbehind];
                 input.buffer.push(val);
             }
             input
@@ -48,7 +44,7 @@ fn vulnerable(bencher: &mut Bencher, inputs: &Inputs) {
             }
             for i in (input.buffer.len() - input.length)..input.buffer.len() {
                 unsafe {
-                    let cpy = *input.buffer.get_unchecked(i - input.fragment);
+                    let cpy = *input.buffer.get_unchecked(i - input.lookbehind);
                     *input.buffer.get_unchecked_mut(i) = cpy;
                 }
             }
@@ -63,7 +59,7 @@ fn lib(bencher: &mut Bencher, inputs: &Inputs) {
         move || inputs.clone(),
         move |input| {
             let mut input = black_box(input);
-            rle_decode_helper::rle_decode(&mut input.buffer, input.fragment, input.length);
+            rle_decode_helper::rle_decode(&mut input.buffer, input.lookbehind, input.length);
             input
         },
         BatchSize::SmallInput,
@@ -79,12 +75,12 @@ fn criterion_benchmark(c: &mut Criterion) {
     let inputs = vec![
         Inputs {
             buffer: initial.clone(),
-            fragment: 333,
+            lookbehind: 333,
             length: 10_000,
         },
         Inputs {
             buffer: initial.clone(),
-            fragment: 2,
+            lookbehind: 2,
             length: 10_000,
         },
     ];

@@ -1,32 +1,57 @@
+//! # rle-decode-helper
+//!
+//! **THE** fastest way to implement any kind of decoding for **R**un **L**ength **E**ncoded data in Rust.
+//!
+//! Writing a fast decoder that is also safe can be quite challenging, so this crate is here to save you the
+//! hassle of maintaining and testing your own implementation.
+//!
+//! # Usage
+//!
+//! ```rust
+//! let mut decode_buffer = vec![0, 0, 1, 1, 0, 2, 3];
+//! let lookbehind_length = 4;
+//! let output_length = 10;
+//! rle_decode_helper::rle_decode(&mut decode_buffer, lookbehind_length, output_length);
+//! assert_eq!(decode_buffer, [0, 0, 1, 1, 0, 2, 3, 1, 0, 2, 3, 1, 0, 2, 3, 1, 0]);
+//! ```
+
 use std::{
     ptr,
     ops,
     cmp,
 };
 
+/// Fast decoding of run length encoded data
+///
+/// Takes the last `lookbehind_length` items of the buffer and repeatedly appends them until
+/// `fill_length` items have been copied.
+///
+/// # Panics
+/// * `lookbehind_length` is 0
+/// * `lookbehind_length` >= `buffer.len()`
+/// * `fill_length + buffer.len()` would overflow
 pub fn rle_decode<T>(
     buffer: &mut Vec<T>,
-    mut repeating_fragment_len: usize,
-    mut items_to_fill: usize,
+    mut lookbehind_length: usize,
+    mut fill_length: usize,
 ) where T: Copy {
-    assert_ne!(repeating_fragment_len, 0, "attempt to repeat fragment of size 0");
+    assert_ne!(lookbehind_length, 0, "attempt to repeat fragment of size 0");
     
     let copy_fragment_start = buffer.len()
-        .checked_sub(repeating_fragment_len)
+        .checked_sub(lookbehind_length)
         .expect("attempt to repeat fragment larger than buffer size");
 
-    // Reserve space for copies
-    buffer.reserve(items_to_fill);
- 
+    // Reserve space for *all* copies
+    buffer.reserve(fill_length);
     
-    while items_to_fill > 0 {
-        let fill_size = cmp::min(repeating_fragment_len, items_to_fill);
+    while fill_length > 0 {
+        let fill_size = cmp::min(lookbehind_length, fill_length);
         append_from_within(
             buffer,
             copy_fragment_start..(copy_fragment_start + fill_size)
         );
-        items_to_fill -= fill_size;
-        repeating_fragment_len *= 2;
+        fill_length -= fill_size;
+        lookbehind_length *= 2;
     }
 }
 
