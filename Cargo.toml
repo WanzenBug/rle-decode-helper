@@ -16,8 +16,10 @@ readme = "README.md"
 [[bench]]
 name = "bench"
 harness = false
+required-features = ["bench"]
+
+[features]
+bench = ["criterion"]
 
 [dependencies]
-
-[dev-dependencies]
-criterion = "0.2"
+criterion = { version = "0.2", optional = true }
