@@ -35,8 +35,10 @@ pub fn rle_decode<T>(
     mut lookbehind_length: usize,
     mut fill_length: usize,
 ) where T: Copy {
-    assert_ne!(lookbehind_length, 0, "attempt to repeat fragment of size 0");
-    
+    if lookbehind_length == 0 {
+        lookbehind_length_fail();
+    }
+
     let copy_fragment_start = buffer.len()
         .checked_sub(lookbehind_length)
         .expect("attempt to repeat fragment larger than buffer size");
@@ -55,31 +57,24 @@ pub fn rle_decode<T>(
     }
 }
 
-fn append_from_within<T, R: ops::RangeBounds<usize>>(seif: &mut Vec<T>, src: R) where T: Copy, {
-    let src_start = match src.start_bound() {
-        ops::Bound::Included(&n) => n,
-        ops::Bound::Excluded(&n) => n
-            .checked_add(1)
-            .unwrap_or_else(|| vec_index_overflow_fail()),
-        ops::Bound::Unbounded => 0,
-    };
-    let src_end = match src.end_bound() {
-        ops::Bound::Included(&n) => n
-            .checked_add(1)
-            .unwrap_or_else(|| vec_index_overflow_fail()),
-        ops::Bound::Excluded(&n) => n,
-        ops::Bound::Unbounded => seif.len(),
-    };
-    assert!(src_start <= src_end, "src end is before src start");
-    assert!(src_end <= seif.len(), "src is out of bounds");
-    let count = src_end - src_start;
+/// Copy of `vec::append_from_within()` proposed for inclusion in stdlib,
+/// see https://github.com/rust-lang/rfcs/pull/2714
+/// Heavily based on the implementation of `slice::copy_within()`,
+/// so we're pretty sure the implementation is sound
+///
+/// Note that the generic bounds were replaced by an explicit a..b range.
+/// This is so that we can compile this on older toolchains (< 1.28).
+fn append_from_within<T>(seif: &mut Vec<T>, src: ops::Range<usize>) where T: Copy, {
+    assert!(src.start <= src.end, "src end is before src start");
+    assert!(src.end <= seif.len(), "src is out of bounds");
+    let count = src.end - src.start;
     seif.reserve(count);
     let vec_len = seif.len();
     unsafe {
         // This is safe because reserve() above succeeded,
         // so `seif.len() + count` did not overflow usize
         ptr::copy_nonoverlapping(
-            seif.get_unchecked(src_start),
+            seif.get_unchecked(src.start),
             seif.get_unchecked_mut(vec_len),
             count,
         );
@@ -89,8 +84,8 @@ fn append_from_within<T, R: ops::RangeBounds<usize>>(seif: &mut Vec<T>, src: R) 
 
 #[inline(never)]
 #[cold]
-fn vec_index_overflow_fail() -> ! {
-    panic!("attempted to index vec up to maximum usize");
+fn lookbehind_length_fail() -> ! {
+    panic!("attempt to repeat fragment of size 0");
 }
 
 #[cfg(test)]
