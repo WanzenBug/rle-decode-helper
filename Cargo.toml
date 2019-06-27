@@ -2,7 +2,7 @@
 name = "rle-decode-helper"
 version = "1.0.0-alpha2"
 authors = ["Moritz Wanzenböck <moritz@wanzenbug.xyz>"]
-edition = "2018"
+edition = "2015"
 license = "MIT OR Apache-2.0"
 description = """
 THE fastest way to implement any kind of decoding for Run Length Encoded data in Rust.
