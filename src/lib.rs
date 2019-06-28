@@ -30,6 +30,7 @@ use std::{
 /// * `lookbehind_length` is 0
 /// * `lookbehind_length` >= `buffer.len()`
 /// * `fill_length + buffer.len()` would overflow
+#[inline(always)]
 pub fn rle_decode<T>(
     buffer: &mut Vec<T>,
     mut lookbehind_length: usize,
@@ -45,17 +46,62 @@ pub fn rle_decode<T>(
 
     // Reserve space for *all* copies
     buffer.reserve(fill_length);
-    
-    while fill_length > 0 {
-        let fill_size = cmp::min(lookbehind_length, fill_length);
+
+    while fill_length >= lookbehind_length {{}
         append_from_within(
             buffer,
-            copy_fragment_start..(copy_fragment_start + fill_size)
+            copy_fragment_start..(copy_fragment_start + lookbehind_length),
         );
-        fill_length -= fill_size;
+        fill_length -= lookbehind_length;
         lookbehind_length *= 2;
     }
+
+    // Copy the last remaining bytes
+    append_from_within(
+        buffer,
+        copy_fragment_start..(copy_fragment_start + fill_length),
+    );
 }
+
+/// Fast decoding of run length encoded data
+///
+/// Takes the last `lookbehind_length` items of the buffer and repeatedly appends them until
+/// `fill_length` items have been copied.
+///
+/// # Panics
+/// * `lookbehind_length` is 0
+/// * `lookbehind_length` >= `buffer.len()`
+/// * `fill_length + buffer.len()` would overflow
+#[inline(always)]
+pub fn rle_decode_simple<T>(
+    buffer: &mut Vec<T>,
+    lookbehind_length: usize,
+    mut fill_length: usize,
+) where T: Copy {
+    if lookbehind_length == 0 {
+        lookbehind_length_fail();
+    }
+
+    let copy_fragment_start = buffer.len()
+        .checked_sub(lookbehind_length)
+        .expect("attempt to repeat fragment larger than buffer size");
+
+    // Reserve space for *all* copies
+    buffer.reserve(fill_length);
+    while fill_length >= lookbehind_length {
+        append_from_within(
+            buffer,
+            copy_fragment_start..(copy_fragment_start + lookbehind_length),
+        );
+        fill_length -= lookbehind_length;
+    }
+    // Fill in the last `fill_length % lookbehind_length` bytes
+    append_from_within(
+        buffer,
+        copy_fragment_start..(copy_fragment_start + fill_length),
+    );
+}
+
 
 /// Copy of `vec::append_from_within()` proposed for inclusion in stdlib,
 /// see https://github.com/rust-lang/rfcs/pull/2714
@@ -98,35 +144,35 @@ mod tests {
         rle_decode(&mut buf, 3, 10);
         assert_eq!(buf, &[1, 2, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3, 4, 5, 3]);
     }
-    
+
     #[test]
     fn test_zero_repeat() {
         let mut buf = vec![1, 2, 3, 4, 5];
         rle_decode(&mut buf, 3, 0);
         assert_eq!(buf, &[1, 2, 3, 4, 5]);
     }
-    
+
     #[test]
     #[should_panic]
     fn test_zero_fragment() {
         let mut buf = vec![1, 2, 3, 4, 5];
         rle_decode(&mut buf, 0, 10);
     }
-    
+
     #[test]
     #[should_panic]
     fn test_zero_fragment_and_repeat() {
         let mut buf = vec![1, 2, 3, 4, 5];
         rle_decode(&mut buf, 0, 0);
     }
-    
+
     #[test]
     #[should_panic]
     fn test_overflow_fragment() {
         let mut buf = vec![1, 2, 3, 4, 5];
         rle_decode(&mut buf, 10, 10);
     }
-    
+
     #[test]
     #[should_panic]
     fn test_overflow_buf_size() {
