@@ -54,9 +54,9 @@ and for a bigger lookbehind length of 333
 Licensed under either of
 
  * Apache License, Version 2.0
-   ([LICENSE-APACHE](LICENSE-APACHE) or http://www.apache.org/licenses/LICENSE-2.0)
+   [LICENSE-APACHE](LICENSE-APACHE)
  * MIT license
-   ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
+   [LICENSE-MIT](LICENSE-MIT)
 
 at your option.
 
