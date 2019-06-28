@@ -11,7 +11,7 @@
 //! let mut decode_buffer = vec![0, 0, 1, 1, 0, 2, 3];
 //! let lookbehind_length = 4;
 //! let output_length = 10;
-//! rle_decode_helper::rle_decode(&mut decode_buffer, lookbehind_length, output_length);
+//! rle_decode_fast::rle_decode(&mut decode_buffer, lookbehind_length, output_length);
 //! assert_eq!(decode_buffer, [0, 0, 1, 1, 0, 2, 3, 1, 0, 2, 3, 1, 0, 2, 3, 1, 0]);
 //! ```
 

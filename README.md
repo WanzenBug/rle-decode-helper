@@ -19,7 +19,7 @@ It takes :
 * the number of items to append.
 Afterwards the vector will contain an extra `fill_length` items.
 ```rust
-use rle_decode_helper::rle_decode;
+use rle_decode_fast::rle_decode;
 
 let mut decode_buffer = vec![0, 0, 1, 1, 0, 2, 3];
 let lookbehind_length = 4;
