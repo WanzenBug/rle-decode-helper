@@ -1,4 +1,4 @@
-# rle-decode-helper
+# rle-decode-fast
 
 **THE** fastest way to implement any kind of decoding for **R**un **L**ength **E**ncoded data in Rust.
 
@@ -9,7 +9,7 @@ hassle of maintaining and testing your own implementation.
 
 Of course, you need to depend on this crate:
 ```toml
-rle-decode-helper = "1.0.0-alpha"
+rle-decode-fast = "1.0.0-alpha"
 ```
 
 There is only a single function to use, `rle_decode<T>(&mut Vec<T>, lookbehind_size: usize, fill_length: usize)`. 

@@ -1,5 +1,5 @@
 [package]
-name = "rle-decode-helper"
+name = "rle-decode-fast"
 version = "1.0.0-alpha2"
 authors = ["Moritz Wanzenböck <moritz@wanzenbug.xyz>"]
 edition = "2015"
