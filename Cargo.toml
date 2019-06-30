@@ -1,6 +1,6 @@
 [package]
 name = "rle-decode-fast"
-version = "1.0.1-alpha.0"
+version = "1.0.1"
 authors = ["Moritz Wanzenböck <moritz@wanzenbug.xyz>"]
 edition = "2015"
 license = "MIT OR Apache-2.0"
