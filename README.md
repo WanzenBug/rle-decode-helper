@@ -9,7 +9,7 @@ hassle of maintaining and testing your own implementation.
 
 Of course, you need to depend on this crate:
 ```toml
-rle-decode-fast = "1.0.0-alpha"
+rle-decode-fast = "1.0"
 ```
 
 There is only a single function to use, `rle_decode<T>(&mut Vec<T>, lookbehind_size: usize, fill_length: usize)`. 
@@ -44,10 +44,10 @@ During the exploration happening in the pre-RFC, some experimentation was conduc
 There is a benchmark comparing a naive (repeated push) implementation, a vulnerable implementation that might lead to
 uninitialized memory and this crate.
 
-The results for a very small lookbehind length of 2
-![lookbehind=2](docs/benchmark-lb2.PNG)
-and for a bigger lookbehind length of 333
-![lookbehind=333](docs/benchmark-lb333.PNG)
+The results for a very small fill length
+![lookbehind=333](docs/benchmark-big-lb-small-length.PNG)
+and for a bigger fill lengths
+![lookbehind=2](docs/benchmark-big-lb-big-length.PNG)
 
 ## License
 
