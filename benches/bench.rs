@@ -3,8 +3,11 @@ extern crate rle_decode_fast;
 
 use criterion::{BatchSize, Bencher, black_box, Criterion, criterion_group, criterion_main, ParameterizedBenchmark};
 
-use std::fmt::{Debug, Formatter, Error};
-use std::rc::Rc;
+use std::{
+    fmt::{Debug, Formatter, Error},
+    rc::Rc,
+    ptr,
+};
 
 #[derive(Clone)]
 struct Inputs {
@@ -46,6 +49,7 @@ fn vulnerable_fixed(bencher: &mut Bencher, inputs: &Rc<Inputs>) {
             let mut buffer = input.buffer;
             for (lookbehind, length) in input.lookbehind.into_iter().zip(input.length) {
                 assert!(lookbehind > 0);
+                assert!(lookbehind <= buffer.len());
                 buffer.reserve(length); // allocate required memory immediately, it's faster this way
                 unsafe {
                     // set length of the buffer up front so we can set elements in a slice instead of pushing
@@ -55,7 +59,7 @@ fn vulnerable_fixed(bencher: &mut Bencher, inputs: &Rc<Inputs>) {
                 for i in (buffer.len() - length)..buffer.len() {
                     unsafe {
                         let cpy = *buffer.get_unchecked(i - lookbehind);
-                        *buffer.get_unchecked_mut(i) = cpy;
+                        ptr::write(buffer.get_unchecked_mut(i), cpy);
                     }
                 }
             }
