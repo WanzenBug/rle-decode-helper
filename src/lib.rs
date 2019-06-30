@@ -18,7 +18,6 @@
 use std::{
     ptr,
     ops,
-    cmp,
 };
 
 /// Fast decoding of run length encoded data
@@ -47,7 +46,7 @@ pub fn rle_decode<T>(
     // Reserve space for *all* copies
     buffer.reserve(fill_length);
 
-    while fill_length >= lookbehind_length {{}
+    while fill_length >= lookbehind_length {
         append_from_within(
             buffer,
             copy_fragment_start..(copy_fragment_start + lookbehind_length),
