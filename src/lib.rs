@@ -109,6 +109,7 @@ pub fn rle_decode_simple<T>(
 ///
 /// Note that the generic bounds were replaced by an explicit a..b range.
 /// This is so that we can compile this on older toolchains (< 1.28).
+#[inline(always)]
 fn append_from_within<T>(seif: &mut Vec<T>, src: ops::Range<usize>) where T: Copy, {
     assert!(src.start <= src.end, "src end is before src start");
     assert!(src.end <= seif.len(), "src is out of bounds");
