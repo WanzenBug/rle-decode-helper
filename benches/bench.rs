@@ -79,21 +79,6 @@ fn lib(bencher: &mut Bencher, inputs: &Rc<Inputs>) {
     )
 }
 
-fn lib_simple(bencher: &mut Bencher, inputs: &Rc<Inputs>) {
-    bencher.iter_batched(
-        move || inputs.as_ref().clone(),
-        move |input| {
-            let input = black_box(input);
-            let mut buffer = input.buffer;
-            for (lookbehind, length) in input.lookbehind.into_iter().zip(input.length) {
-                rle_decode_fast::rle_decode_simple(&mut buffer, lookbehind, length);
-            }
-            buffer
-        },
-        BatchSize::SmallInput,
-    )
-}
-
 fn criterion_benchmark(c: &mut Criterion) {
     let mut initial = Vec::new();
     for i in 0..5000 {
@@ -136,7 +121,6 @@ fn criterion_benchmark(c: &mut Criterion) {
             ParameterizedBenchmark::new("naive", naive, inputs)
                 .with_function("vulnerable", vulnerable)
                 .with_function("lib", lib)
-                .with_function("lib-simple", lib_simple),
     );
 }
 
