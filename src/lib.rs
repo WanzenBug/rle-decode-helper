@@ -80,11 +80,11 @@ fn append_from_within<T>(seif: &mut Vec<T>, src: ops::Range<usize>) where T: Cop
     unsafe {
         // This is safe because reserve() above succeeded,
         // so `seif.len() + count` did not overflow usize
-        ptr::copy_nonoverlapping(
-            seif.get_unchecked(src.start),
-            seif.get_unchecked_mut(vec_len),
-            count,
-        );
+        // Derive both `src_ptr` and `dest_ptr` from the same loan
+        let ptr = seif.as_mut_ptr();
+        let src_ptr = ptr.add(src.start);
+        let dest_ptr = ptr.add(vec_len);
+        ptr::copy_nonoverlapping(src_ptr, dest_ptr, count);
         seif.set_len(vec_len + count);
     }
 }
