@@ -15,10 +15,12 @@
 //! assert_eq!(decode_buffer, [0, 0, 1, 1, 0, 2, 3, 1, 0, 2, 3, 1, 0, 2, 3, 1, 0]);
 //! ```
 
-use std::{
-    ptr,
-    ops,
-};
+#![no_std]
+
+use core::ptr;
+use core::ops;
+extern crate alloc;
+use alloc::vec::Vec;
 
 /// Fast decoding of run length encoded data
 ///
@@ -98,6 +100,7 @@ fn lookbehind_length_fail() -> ! {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use alloc::vec;
 
     #[test]
     fn test_basic() {
