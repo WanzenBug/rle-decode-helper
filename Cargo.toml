@@ -5,10 +5,9 @@ authors = ["Moritz Wanzenböck <moritz@wanzenbug.xyz>"]
 edition = "2015"
 license = "MIT OR Apache-2.0"
 description = """
-THE fastest way to implement any kind of decoding for Run Length Encoded data in Rust.
+Deprecated: this is available in stable Rust since 1.53 as Vec::extend_from_within().
 
-Writing a fast decoder that is also safe can be quite challenging, so this crate is here to save you the
-hassle of maintaining and testing your own implementation.
+Previsouly, the fastest way to implement any kind of decoding for Run Length Encoded data in Rust.
 """
 repository = "https://github.com/WanzenBug/rle-decode-helper"
 readme = "README.md"
@@ -20,6 +19,9 @@ required-features = ["bench"]
 
 [features]
 bench = ["criterion"]
+
+[badges]
+maintenance = { status = "deprecated" }
 
 [dependencies]
 criterion = { version = "0.2", optional = true }

@@ -1,5 +1,7 @@
 # rle-decode-fast
 
+**The same functionallity [is available in stable Rust](https://doc.rust-lang.org/alloc/vec/struct.Vec.html#method.extend_from_within) since 1.53, use that instead**
+
 **THE** fastest way to implement any kind of decoding for **R**un **L**ength **E**ncoded data in Rust.
 
 Writing a fast decoder that is also safe can be quite challenging, so this crate is here to save you the
